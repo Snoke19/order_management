@@ -9,6 +9,7 @@ import com.example.order_management.service.OrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -24,11 +25,12 @@ import static org.hamcrest.Matchers.equalTo;
 
 @Testcontainers
 @SpringBootTest
+@ActiveProfiles(value = "dev")
 public class SchedulerDeleteOrderTest {
 
     @Container
     static MySQLContainer<?> mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:5.7"))
-        .withInitScript("database.sql");
+        .withInitScript("./sql_scripts/schema_without_data.sql");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -44,12 +46,11 @@ public class SchedulerDeleteOrderTest {
     private GoodsRepository goodsRepository;
 
     @Test
-    public void delete_unpaid_orders_test() throws InterruptedException {
+    public void delete_unpaid_orders_test() {
 
         Good goodSaved = this.goodsRepository.save(stubGood());
         this.orderService.createNewOrder(stubOrderDataDto(goodSaved));
 
-        Thread.sleep(100L);
         this.orderService.deleteUnpaidOrders();
 
         List<FullInfoOrdersDto> orders = this.orderService.getAllOrders();

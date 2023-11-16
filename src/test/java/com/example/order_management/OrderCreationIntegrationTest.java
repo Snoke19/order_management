@@ -3,6 +3,7 @@ package com.example.order_management;
 import com.example.order_management.dto.FullInfoOrdersDto;
 import com.example.order_management.dto.GoodInfoOrderDto;
 import com.example.order_management.dto.OrderDataDto;
+import com.example.order_management.dto.PaymentInfoDto;
 import com.example.order_management.enums.OrderStatus;
 import com.example.order_management.exception.GoodSoldOutException;
 import com.example.order_management.exception.NotEnoughGoodsException;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -25,21 +28,24 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
 @SpringBootTest
-public class OrderCreationTest {
+@ActiveProfiles(value = "dev")
+public class OrderCreationIntegrationTest {
 
     @Container
     static MySQLContainer<?> mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:5.7"))
-        .withInitScript("database.sql");
+        .withInitScript("./sql_scripts/schema_without_data.sql");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -48,6 +54,7 @@ public class OrderCreationTest {
         registry.add("spring.datasource.password", mySQLContainer::getPassword);
     }
 
+    @SpyBean
     @Autowired
     private OrderService orderService;
 
@@ -70,20 +77,25 @@ public class OrderCreationTest {
     @Test
     void create_new_order_with_one_goods_test() {
 
+        //given
         Good goodSaved = goodsRepository.save(stubGood());
 
+        //act
         this.orderService.createNewOrder(stubOrderDataDto(goodSaved));
 
+        //assert
         List<FullInfoOrdersDto> orders = this.orderService.getAllOrders();
 
-        assertThat(orders.size(), equalTo(1));
-        assertThat(orders.get(0).getStatus(), equalTo(OrderStatus.PROCESSING));
-        assertThat(orders.get(0).getCreated(), notNullValue());
-        assertThat(orders.get(0).getOrderGoodDetails(), not(empty()));
+        assertAll(
+            () -> assertThat(orders.size(), equalTo(1)),
+            () -> assertThat(orders.get(0).getStatus(), equalTo(OrderStatus.PROCESSING)),
+            () -> assertThat(orders.get(0).getCreated(), notNullValue()),
+            () -> assertThat(orders.get(0).getOrderGoodDetails(), not(empty())),
 
-        assertThat(orders.get(0).getOrderGoodDetails().get(0).getName(), equalTo("IPhone 10"));
-        assertThat(orders.get(0).getOrderGoodDetails().get(0).getPrice(), equalTo(BigDecimal.valueOf(12000)));
-        assertThat(orders.get(0).getOrderGoodDetails().get(0).getQuantityBuy(), equalTo(2));
+            () -> assertThat(orders.get(0).getOrderGoodDetails().get(0).getName(), equalTo("IPhone 10")),
+            () -> assertThat(orders.get(0).getOrderGoodDetails().get(0).getPrice(), equalTo(BigDecimal.valueOf(12000))),
+            () -> assertThat(orders.get(0).getOrderGoodDetails().get(0).getQuantityBuy(), equalTo(2))
+        );
 
         List<Good> goods = this.goodsRepository.findAll();
 
@@ -91,7 +103,7 @@ public class OrderCreationTest {
     }
 
     @Test
-    void create_new_order_with_more_goods_quantity_than_exist_in_goods_test() {
+    void create_new_order_with_more_goods_quantity_than_exist_in_goods_exception_test() {
 
         Good goodSaved = goodsRepository.save(stubGood());
 
@@ -105,9 +117,9 @@ public class OrderCreationTest {
     }
 
     @Test
-    void create_new_order_when_good_quantity_is_zero_in_stock_test() {
+    void create_new_order_when_good_quantity_is_zero_in_stock_exception_test() {
 
-        Good good = Good.builder().name("IPhone 10").quantity(0).build();
+        Good good = Good.builder().name("IPhone 10").quantity(0).price(BigDecimal.valueOf(23000)).build();
         Good goodSaved = goodsRepository.save(good);
 
         GoodSoldOutException exception = assertThrows(GoodSoldOutException.class, () -> this.orderService.createNewOrder(stubOrderDataDto(goodSaved)));
@@ -116,7 +128,7 @@ public class OrderCreationTest {
     }
 
     @Test
-    void create_new_order_when_good_that_does_not_exist_test() {
+    void create_new_order_when_good_that_does_not_exist_exception_test() {
 
         GoodSoldOutException exception = assertThrows(GoodSoldOutException.class, () ->
             this.orderService.createNewOrder(stubOrderDataDto(Good.builder().id(334L).build())));
@@ -130,17 +142,27 @@ public class OrderCreationTest {
         this.orderService.createNewOrder(stubOrderDataDto(goodSaved));
         List<FullInfoOrdersDto> orders = this.orderService.getAllOrders();
 
-        this.orderService.payForOrder(orders.get(0).getOrderId());
+        this.orderService.payForOrder(PaymentInfoDto.builder().orderId(orders.get(0).getOrderId()).build());
 
         List<FullInfoOrdersDto> ordersNew = this.orderService.getAllOrders();
 
         assertThat(ordersNew.get(0).getStatus(), equalTo(OrderStatus.PAID));
+        assertThat(ordersNew.get(0).getOrderGoodDetails().get(0).getName(), equalTo(goodSaved.getName()));
+        assertThat(ordersNew.get(0).getOrderGoodDetails().get(0).getQuantityBuy(), equalTo(2));
+
+        Optional<Good> goodOptional = this.goodsRepository.findById(goodSaved.getId());
+
+        if (goodOptional.isPresent()) {
+            Good good = goodOptional.get();
+            assertThat(good.getQuantity(), equalTo(3));
+        }
     }
 
     @Test
-    void pay_for_order_that_already_deleted_test() {
+    void pay_for_order_that_already_deleted_exception_test() {
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> this.orderService.payForOrder(42423));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+            this.orderService.payForOrder(PaymentInfoDto.builder().orderId(42423).build()));
 
         assertThat(exception.getMessage(), equalTo("Order is not found!"));
     }

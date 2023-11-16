@@ -2,10 +2,13 @@ create table goods
 (
     id_good     bigint auto_increment
         primary key,
-    name        varchar(45)  null,
+    name        varchar(45)  not null,
     description varchar(256) null,
-    price       decimal      null,
-    quantity    int          null
+    price       decimal      not null,
+    quantity    int          not null,
+    version     int          not null,
+    constraint goods_name_pk
+        unique (name)
 );
 
 create table orders
@@ -28,3 +31,4 @@ create table order_details
     constraint order_details_order_id__fk
         foreign key (order_id) references orders (id_order)
 );
+
