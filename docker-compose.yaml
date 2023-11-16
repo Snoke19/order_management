@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  database_mysql:
+    container_name: db-mysql
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password123
+      MYSQL_DATABASE: film_db
+    volumes:
+      - ${PWD}/schema.sql:/docker-entrypoint-initdb.d/set.sql
+    restart: always
+    networks:
+      - oder_manager_service_network
+  oder_manager_service:
+    container_name: oder-manager-service
+    build: .
+    environment:
+      MYSQL_DATABASE: order_manager
+      CONTAINER_NAME_DATABASE: db-mysql
+      MYSQL_PASSWORD: password123
+      MYSQL_USER: manager_secret
+    ports:
+      - "8080:8080"
+    networks:
+      - oder_manager_service_network
+    depends_on:
+      - database_mysql
+
+networks:
+  oder_manager_service_network:
