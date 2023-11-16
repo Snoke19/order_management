@@ -1,4 +1,4 @@
-package com.example.order_management.dto.mapper;
+package com.example.order_management.mapper;
 
 import com.example.order_management.dto.GoodDto;
 import com.example.order_management.dto.InfoGoodDto;

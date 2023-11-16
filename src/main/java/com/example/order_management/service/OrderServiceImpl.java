@@ -4,6 +4,7 @@ import com.example.order_management.dto.FullInfoOrdersDto;
 import com.example.order_management.dto.GoodInfoOrderDto;
 import com.example.order_management.dto.OrderDataDto;
 import com.example.order_management.dto.OrderGoodDetailsDto;
+import com.example.order_management.dto.PaymentInfoDto;
 import com.example.order_management.enums.OrderStatus;
 import com.example.order_management.exception.NotEnoughGoodsException;
 import com.example.order_management.models.Good;
@@ -12,14 +13,16 @@ import com.example.order_management.models.OrderDetail;
 import com.example.order_management.repository.OrderDetailRepository;
 import com.example.order_management.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -87,9 +90,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void payForOrder(long orderId) {
+    public void payForOrder(PaymentInfoDto paymentInfo) {
 
-        Order order = this.orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order is not found!"));
+        Order order = this.orderRepository.findById(paymentInfo.getOrderId()).orElseThrow(() -> new EntityNotFoundException("Order is not found!"));
 
         order.setStatus(OrderStatus.PAID);
     }

@@ -6,8 +6,7 @@ import java.util.List;
 
 public interface GoodsService {
 
-    List<Good> getAllGoods();
+    List<Good> getAllByAvailableGoods();
     void addGood(Good good);
-
     Good getGoodIsNotSoldOut(long idGood);
 }

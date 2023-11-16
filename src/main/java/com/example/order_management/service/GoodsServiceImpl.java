@@ -20,8 +20,8 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<Good> getAllGoods() {
-        return this.goodsRepository.findAll();
+    public List<Good> getAllByAvailableGoods() {
+        return this.goodsRepository.findAllByAvailableGoods();
     }
 
     @Override

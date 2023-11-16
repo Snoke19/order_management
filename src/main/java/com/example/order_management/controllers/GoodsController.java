@@ -2,7 +2,7 @@ package com.example.order_management.controllers;
 
 import com.example.order_management.dto.GoodDto;
 import com.example.order_management.dto.InfoGoodDto;
-import com.example.order_management.dto.mapper.GoodsDtoMapper;
+import com.example.order_management.mapper.GoodsDtoMapper;
 import com.example.order_management.models.Good;
 import com.example.order_management.service.GoodsService;
 import org.springframework.http.HttpStatus;
@@ -34,8 +34,8 @@ public class GoodsController {
     }
 
     @GetMapping("/goods")
-    private List<InfoGoodDto> getAllGoods() {
-        return goodsDtoMapper.entityToDto(this.goodsService.getAllGoods());
+    private List<InfoGoodDto> getAllByAvailableGoods() {
+        return goodsDtoMapper.entityToDto(this.goodsService.getAllByAvailableGoods());
     }
 
     @PostMapping("/good")

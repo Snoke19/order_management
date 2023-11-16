@@ -3,6 +3,7 @@ package com.example.order_management.controllers;
 import com.example.order_management.ErrorMessage;
 import com.example.order_management.dto.FullInfoOrdersDto;
 import com.example.order_management.dto.OrderDataDto;
+import com.example.order_management.dto.PaymentInfoDto;
 import com.example.order_management.exception.GoodSoldOutException;
 import com.example.order_management.exception.NotEnoughGoodsException;
 import com.example.order_management.service.OrderService;
@@ -39,8 +40,8 @@ public class OrderController {
     }
 
     @PostMapping("/order/pay")
-    public void payForOrder(@RequestBody Long orderId) {
-        this.orderService.payForOrder(orderId);
+    public void payForOrder(@RequestBody PaymentInfoDto paymentInfo) {
+        this.orderService.payForOrder(paymentInfo);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
