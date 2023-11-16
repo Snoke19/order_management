@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
 @SpringBootTest
-@ActiveProfiles(value = "dev")
+@ActiveProfiles(value = "test")
 public class OrderCreationIntegrationTest {
 
     @Container

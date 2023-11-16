@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 @Testcontainers
 @SpringBootTest
-@ActiveProfiles(value = "dev")
+@ActiveProfiles(value = "test")
 public class SchedulerDeleteOrderTest {
 
     @Container
