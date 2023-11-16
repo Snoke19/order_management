@@ -5,11 +5,11 @@ services:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: user
+      MYSQL_USER: manager_secret
       MYSQL_PASSWORD: password123
-      MYSQL_DATABASE: film_db
+      MYSQL_DATABASE: order_manager
     volumes:
-      - ${PWD}/schema.sql:/docker-entrypoint-initdb.d/set.sql
+      - ${PWD}/schema_with_data.sql:/docker-entrypoint-initdb.d/set.sql
     restart: always
     networks:
       - oder_manager_service_network
@@ -17,10 +17,10 @@ services:
     container_name: oder-manager-service
     build: .
     environment:
+      MYSQL_USER: manager_secret
+      MYSQL_PASSWORD: password123
       MYSQL_DATABASE: order_manager
       CONTAINER_NAME_DATABASE: db-mysql
-      MYSQL_PASSWORD: password123
-      MYSQL_USER: manager_secret
     ports:
       - "8080:8080"
     networks:
