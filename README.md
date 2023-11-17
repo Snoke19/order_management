@@ -54,7 +54,7 @@ curl -X GET --location "http://localhost:8080/api/v1/goods" \
 
 ## Client
 
-### Creat a new order:
+### Creat a new order and you can add many good for buying:
 
 ```shell
 curl -X POST --location "http://localhost:8080/api/v1/order" \
