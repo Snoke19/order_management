@@ -46,10 +46,12 @@ public class SchedulerDeleteOrderTest {
     private GoodsRepository goodsRepository;
 
     @Test
-    public void delete_unpaid_orders_test() {
+    public void delete_unpaid_orders_test() throws InterruptedException {
 
         Good goodSaved = this.goodsRepository.save(stubGood());
         this.orderService.createNewOrder(stubOrderDataDto(goodSaved));
+
+        Thread.sleep(10000L);
 
         this.orderService.deleteUnpaidOrders();
 
