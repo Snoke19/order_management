@@ -51,6 +51,17 @@ curl -X POST --location "http://localhost:8080/api/v1/good" \
 curl -X GET --location "http://localhost:8080/api/v1/goods" \
     -H "Content-Type: application/json"
 ```
+```json
+[
+  {
+    "name": "iPhone 12",
+    "description": "Flagship smartphone from Apple",
+    "price": 1000,
+    "quantity": 50,
+    "id": 1
+  }
+}
+```
 
 ## Client
 
