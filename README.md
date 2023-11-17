@@ -84,6 +84,7 @@ curl -X POST --location "http://localhost:8080/api/v1/order" \
 curl -X GET --location "http://localhost:8080/api/v1/orders" \
     -H "Content-Type: application/json"
 ```
+
 ```json
 [
   {
