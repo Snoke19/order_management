@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
                 return OrderGoodDetailsDto.builder()
                     .goodId(good.getId())
                     .name(good.getName())
-                    .price(good.getPrice())
+                    .price(good.getPrice().multiply(BigDecimal.valueOf(data1.getQuantityBuy())))
                     .quantityBuy(data1.getQuantityBuy())
                     .build();
             }).collect(Collectors.toList()))
