@@ -1,8 +1,8 @@
 # How to run this project with docker
 
-Docker run mysql database and spring rest api with predefined data of goods!
+Docker runs MySQL database and spring rest API with predefined data of goods!
 
-Rest Api:
+Rest API:
 * port - 8080
 
 MySql Database:
@@ -12,7 +12,7 @@ MySql Database:
 ```shell
 git clone https://github.com/Snoke19/order_management.git
 ```
-### Go to project folder and run docker compose
+### Go to the project folder and run docker-compose
 
 ```shell
 cd ./order_management
@@ -20,7 +20,7 @@ cd ./order_management
 docker compose up
 ```
 
-### Run tests with maven
+### Run tests with Maven
 
 ```shell
 cd ./order_management
@@ -54,7 +54,7 @@ curl -X GET --location "http://localhost:8080/api/v1/goods" \
 
 ## Client
 
-### Creat a new order and you can add many good for buying:
+### Create a new order and you can add many good for buying:
 
 ```shell
 curl -X POST --location "http://localhost:8080/api/v1/order" \
