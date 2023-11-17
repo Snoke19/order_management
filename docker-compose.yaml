@@ -8,8 +8,10 @@ services:
       MYSQL_USER: manager_secret
       MYSQL_PASSWORD: password123
       MYSQL_DATABASE: order_manager
+    ports:
+      - "3306:3306"
     volumes:
-      - ${PWD}/schema_with_data.sql:/docker-entrypoint-initdb.d/set.sql
+      - ${PWD}/src/main/resources/sql_scripts/schema_with_data.sql:/docker-entrypoint-initdb.d/set.sql
     restart: always
     networks:
       - oder_manager_service_network
@@ -20,7 +22,7 @@ services:
       MYSQL_USER: manager_secret
       MYSQL_PASSWORD: password123
       MYSQL_DATABASE: order_manager
-      CONTAINER_NAME_DATABASE: db-mysql
+      API_ADDRESS_DATABASE: db-mysql
     ports:
       - "8080:8080"
     networks:
