@@ -6,7 +6,6 @@ create table goods
     description varchar(256) null,
     price       decimal      not null,
     quantity    int          not null,
-    version     int          not null,
     constraint goods_name_pk
         unique (name)
 );
@@ -31,4 +30,3 @@ create table order_details
     constraint order_details_order_id__fk
         foreign key (order_id) references orders (id_order)
 );
-
