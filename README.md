@@ -20,7 +20,7 @@ cd ./order_management
 docker compose up
 ```
 
-### Run tests with Maven
+### Run tests with Maven and all tests working with test-containers with predefined database
 
 ```shell
 cd ./order_management
