@@ -45,7 +45,7 @@ curl -X POST --location "http://localhost:8080/api/v1/good" \
         }"
 ```
 
-### Get all goods:
+### Get all available goods:
 
 ```shell
 curl -X GET --location "http://localhost:8080/api/v1/goods" \
