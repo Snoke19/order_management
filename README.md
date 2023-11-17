@@ -60,7 +60,7 @@ curl -X GET --location "http://localhost:8080/api/v1/goods" \
     "quantity": 50,
     "id": 1
   }
-}
+]
 ```
 
 ## Client
@@ -83,6 +83,23 @@ curl -X POST --location "http://localhost:8080/api/v1/order" \
 ```shell
 curl -X GET --location "http://localhost:8080/api/v1/orders" \
     -H "Content-Type: application/json"
+```
+```json
+[
+  {
+    "orderId": 1,
+    "created": "2023-11-17T00:01:58",
+    "status": "PAID",
+    "orderGoodDetails": [
+      {
+        "goodId": 7,
+        "name": "Samsung Galaxy Tab S7",
+        "price": 600,
+        "quantityBuy": 2
+      }
+    ]
+  }
+]
 ```
 
 ### Pay for order
