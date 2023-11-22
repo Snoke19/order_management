@@ -4,10 +4,13 @@ package com.example.order_management;
 import com.example.order_management.models.Good;
 import com.example.order_management.repository.GoodsRepository;
 import com.example.order_management.service.GoodsService;
+import com.example.order_management.service.GoodsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,7 +29,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
-@SpringBootTest
+@DataJpaTest
+@Import(GoodsServiceImpl.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles(value = "test")
 public class GoodsIntegrationTest {
 
@@ -72,10 +77,11 @@ public class GoodsIntegrationTest {
     @Test
     public void add_good_test() {
 
-        this.goodsService.addGood(Good.builder().name("test").description("test_desc").price(BigDecimal.valueOf(12000)).quantity(2).build());
+        Good good = Good.builder().name("test").description("test_desc").price(BigDecimal.valueOf(12000)).quantity(2).build();
+
+        this.goodsService.addGood(good);
 
         List<Good> goods = this.goodsService.getAllByAvailableGoods();
-
         assertThat(goods.size(), equalTo(1));
         assertThat(goods.get(0).getName(), equalTo("test"));
     }

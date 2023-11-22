@@ -34,9 +34,11 @@ public class Order implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idOrder;
 
+    @Column(nullable = false)
     private LocalDateTime created;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderStatus status;
 
     @ToString.Exclude

@@ -93,7 +93,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void payForOrder(PaymentInfoDto paymentInfo) {
 
-        Order order = this.orderRepository.findById(paymentInfo.getOrderId()).orElseThrow(() -> new EntityNotFoundException("Order is not found!"));
+        Order order = this.orderRepository.findByIdOrderAndStatus(paymentInfo.getOrderId(), OrderStatus.PROCESSING)
+            .orElseThrow(() -> new EntityNotFoundException("Order is paid or not found!"));
 
         order.setStatus(OrderStatus.PAID);
     }

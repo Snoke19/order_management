@@ -3,6 +3,7 @@ package com.example.order_management.service;
 import com.example.order_management.exception.GoodSoldOutException;
 import com.example.order_management.models.Good;
 import com.example.order_management.repository.GoodsRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class GoodsServiceImpl implements GoodsService {
 
         Good good = this.goodsRepository.findById(idGood).orElseThrow(() -> {
             log.info("EntityNotFoundException: {}, idGood: {}", "Good does not found!", idGood);
-            return new GoodSoldOutException("Good does not found!");
+            return new EntityNotFoundException("Good does not found!");
         });
 
         if (good.getQuantity() == 0) {
